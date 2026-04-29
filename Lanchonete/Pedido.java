@@ -1,32 +1,51 @@
-import java.util.List;
 import java.util.ArrayList;
 
-class Pedido {
-    private List<Produto> produtos = new ArrayList<>();
+public class Pedido {
+    
     private String nomeCliente;
-    private double valorTotal;
+    private ArrayList<Produto> itens; 
 
-    public void setNomeCliente(String nome) { this.nomeCliente = nome; }
-
-    public void adicionarProduto(Produto p) { 
-        produtos.add(p); 
-        System.out.println(p.getNome() + " adicionado.");
+    public Pedido(String nomeCliente) {
+        this.nomeCliente = nomeCliente;
+        this.itens = new ArrayList<>(); 
     }
 
-    public void removerProdutoPorCodigo(int codigo) {
-        produtos.removeIf(p -> p.getCodigo() == codigo);
+    
+    public void adicionarItem(Produto p) {
+        this.itens.add(p);
     }
 
-    public void fecharPedido() {
-        valorTotal = 0;
-        for (Produto p : produtos) valorTotal += p.getPreco();
-        if (valorTotal > 100) valorTotal *= 0.9;
+    
+    public double calcularTotal() {
+        double total = 0;
+
+        
+        for (Produto p : itens) {
+            total += p.getPreco();
+        }
+
+        
+        if (total > 50.00) {
+            total = total * 0.90;
+        }
+
+        return total;
     }
 
-    public void exibirResumo() {
-        System.out.println("\n--- RESUMO ---");
-        System.out.println("Cliente: " + nomeCliente);
-        for (Produto p : produtos) System.out.println("- " + p.getNome());
-        System.out.printf("Total: R$ %.2f\n", valorTotal);
+    
+    public void exibir() {
+        System.out.println("=== Pedido de: " + this.nomeCliente + " ===");
+
+        
+        for (Produto p : itens) {
+            
+            String precoItem = String.format("%.2f", p.getPreco()).replace('.', ',');
+            System.out.printf("%s - R$ %s%n", p.getNome(), precoItem);
+        }
+
+        
+        double totalFinal = calcularTotal();
+        String totalFormatado = String.format("%.2f", totalFinal).replace('.', ',');
+        System.out.println("Total: R$ " + totalFormatado);
     }
 }

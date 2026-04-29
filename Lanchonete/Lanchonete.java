@@ -1,46 +1,65 @@
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
-class Lanchonete {
-    private Map<Integer, Produto> cardapio = new HashMap<>();
-    private Scanner leitor = new Scanner(System.in);
+public class Lanchonete {
+    
+    private HashMap<String, Produto> cardapio;
+    private Queue<Pedido> filaDePedidos;
+    private Stack<Pedido> historico;
 
+    
     public Lanchonete() {
-        cardapio.put(101, new Produto("Hambúrguer", 25.0, 101));
-        cardapio.put(102, new Produto("X-Salada", 30.0, 102));
-        cardapio.put(201, new Produto("Refrigerante", 10.0, 201));
-        cardapio.put(202, new Produto("Suco Natural", 15.0, 202));
+        this.cardapio = new HashMap<>();
+        this.filaDePedidos = new LinkedList<>(); 
+        this.historico = new Stack<>();
     }
 
-    public void menuPrincipal() {
-        Pedido pedido = new Pedido(); // Aqui o erro desaparece
-        System.out.print("Nome do Cliente: ");
-        pedido.setNomeCliente(leitor.nextLine());
+    public void adicionarAoCardapio(Produto p) {
+       
+        this.cardapio.put(p.getCodigo(), p);
+    }
 
-        int opcao = 0;
-        while (opcao != 4) {
-            System.out.println("\n1. Cardápio | 2. Add Item | 3. Remover | 4. Finalizar");
-            System.out.print("Escolha: ");
-            try {
-                opcao = Integer.parseInt(leitor.nextLine());
-            } catch (Exception e) { opcao = 0; }
+    public Produto buscarProduto(String codigo) {
+      
+        return this.cardapio.get(codigo);
+    }
 
-            if (opcao == 1) {
-                for (Produto p : cardapio.values()) {
-                    System.out.println(p.getCodigo() + " - " + p.getNome() + " (R$ " + p.getPreco() + ")");
-                }
-            } else if (opcao == 2) {
-                System.out.print("Código: ");
-                int c = Integer.parseInt(leitor.nextLine());
-                if (cardapio.containsKey(c)) pedido.adicionarProduto(cardapio.get(c));
-            } else if (opcao == 3) {
-                System.out.print("Código para remover: ");
-                int c = Integer.parseInt(leitor.nextLine());
-                pedido.removerProdutoPorCodigo(c);
-            }
+    public void listarCardapio() {
+       
+        for (Produto p : cardapio.values()) {
+            p.exibir();
         }
-        pedido.fecharPedido();
-        pedido.exibirResumo();
+    }
+
+  
+    public void fazerPedido(Pedido pedido) {
+       
+        this.filaDePedidos.add(pedido);
+    }
+
+    public void atenderProximo() {
+     
+        if (filaDePedidos.isEmpty()) {
+            System.out.println("Nenhum pedido na fila.");
+            return;
+        }
+
+        Pedido atendido = filaDePedidos.poll();
+        System.out.println("--- Atendendo Pedido ---");
+        atendido.exibir();
+        this.historico.push(atendido);
+    }
+
+    public void verUltimoAtendido() {
+    
+        if (historico.isEmpty()) {
+            System.out.println("Nenhum pedido atendido ainda.");
+            return;
+        }
+
+        System.out.println("--- Último Pedido Finalizado ---");
+        historico.peek().exibir();
     }
 }
